@@ -4,5 +4,5 @@ namespace App\Repositories;
 
 interface IAirtimeRepository 
 {
-    public function vend($params);
+    public function vend($params, $type);
 }
