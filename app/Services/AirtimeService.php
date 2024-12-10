@@ -23,9 +23,9 @@ class AirtimeService implements IAirtimeRepository {
     }
     public function vend($params)
     {
-        $user_id = 12; // for example
+        $user_id = 13; // for example
         $response = null;
-        // DB::beginTransaction();
+        DB::beginTransaction();
         
         try {
         
@@ -49,14 +49,16 @@ class AirtimeService implements IAirtimeRepository {
 
                 if(!empty($comissionAmount)) {
                     $userWallet->balance = $userWallet->balance + $comissionAmount->bonus_amount;
-                    $userWallet->save();
-
-                    $this->transactionService->createTransaction([
+                    
+                    $trans = $this->transactionService->createTransaction([
                         'user_id' => $user_id,
                         'reference' => 'system-reference'.time(),
                         'amount'    => $comissionAmount->bonus_amount,
                         'transaction_type' => 'comission_top_up'
                     ]);
+
+                    $userWallet->last_transaction_id = $trans->id;
+                    $userWallet->save();
                 }
 
                 return [
@@ -71,7 +73,7 @@ class AirtimeService implements IAirtimeRepository {
             }
 
         } catch (\Exception $e) {   
-            // DB::rollBack();
+            DB::rollBack();
             dd($e->getMessage());
             return [
                 'success' => false,
