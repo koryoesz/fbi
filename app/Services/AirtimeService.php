@@ -25,56 +25,56 @@ class AirtimeService implements IAirtimeRepository {
     {
         $user_id = 13; // for example authenticated user should be retrieved from either here or before
         $response = null;
-        DB::beginTransaction();
         
         try {
-        
-            $userWallet = $this->walletService->getUserWallet($user_id);
-        
-            if($userWallet->balance > $params['amount']) {
-                $userWallet->balance = $userWallet->balance - $params['amount'];
-                $userWallet->save();
-           
-                $response = $this->bapService->vendAirtime($params);
-
-                $this->transactionService->createTransaction([
-                    'user_id' => $user_id,
-                    'reference' => $response['data']['transactionReference'],
-                    'amount'    => $params['amount'],
-                    'network_provider'   => $params['service_type'],
-                    'transaction_type' => 'wallet_debit'
-                ]);
-                
-                $comissionAmount = $this->commissionService->getCommissionLookup($params['amount']);
-
-                if(!empty($comissionAmount)) {
-                    $userWallet->balance = $userWallet->balance + $comissionAmount->bonus_amount;
-                    
-                    $trans = $this->transactionService->createTransaction([
-                        'user_id' => $user_id,
-                        'reference' => 'system-reference'.time(),
-                        'amount'    => $comissionAmount->bonus_amount,
-                        'transaction_type' => 'comission_top_up'
-                    ]);
-
-                    $userWallet->last_transaction_id = $trans->id;
+            return DB::transaction(function () use ($params, $user_id){
+                $userWallet = $this->walletService->getUserWallet($user_id);
+            
+                if($userWallet->balance > $params['amount']) {
+                    $userWallet->balance = $userWallet->balance - $params['amount'];
                     $userWallet->save();
-                }
+            
+                    $response = $this->bapService->vendAirtime($params);
 
-                return [
-                    'wallet_balance' => $userWallet->balance
-                ];
-                
-            } else {
-                return [
-                    'status' => 'success',
-                    'message' => 'Insufficient wallet balance'
-                ];
-            }
+                    $this->transactionService->createTransaction([
+                        'user_id' => $user_id,
+                        'reference' => $response['data']['transactionReference'],
+                        'amount'    => $params['amount'],
+                        'network_provider'   => $params['service_type'],
+                        'transaction_type' => 'wallet_debit'
+                    ]);
+                    
+                    $comissionAmount = $this->commissionService->getCommissionLookup($params['amount']);
+
+                    if(!empty($comissionAmount)) {
+                        $userWallet->balance = $userWallet->balance + $comissionAmount->bonus_amount;
+                        
+                        $trans = $this->transactionService->createTransaction([
+                            'user_id' => $user_id,
+                            'reference' => 'system-reference'.time(),
+                            'amount'    => $comissionAmount->bonus_amount,
+                            'transaction_type' => 'comission_top_up'
+                        ]);
+
+                        $userWallet->last_transaction_id = $trans->id;
+                        $userWallet->save();
+                    }
+
+                    return [
+                        'wallet_balance' => $userWallet->balance
+                    ];
+                    
+                } else {
+                    return [
+                        'status' => 'success',
+                        'message' => 'Insufficient wallet balance'
+                    ];
+                }
+            });
+            
 
         } catch (\Exception $e) {   
             DB::rollBack();
-            dd($e->getMessage());
             return [
                 'success' => false,
                 'error' => $e->getMessage()
