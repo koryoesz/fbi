@@ -32,43 +32,111 @@ class AirtimeController extends Controller
      /**
      * @OA\Get(
      *     path="/vend/recharge/{type}",
-     *     summary="buy airtime",
+     *     summary="Buy airtime using BAP or Shago",
      *     tags={"Airtime"},
-     *     description="Endpoint for purchasing airtime, either from Bap or Shago Services",
-        * @OA\Parameter(
-        *         name="phone_number",
-        *         in="query",
-        *         required=true,
-        *         description="The phone number to recharge (format: 07012345678)",
-        *         @OA\Schema(
-        *             type="string",
-        *             example="07065788819"
-        *         )
-        *     ),
-        *     @OA\Parameter(
-        *         name="amount",
-        *         in="query",
-        *         required=true,
-        *         description="The amount of airtime to purchase (in NGN)",
-        *         @OA\Schema(
-        *             type="number",
-        *             format="float",
-        *             example=100.00
-        *         )
-        *     ),
-        *     @OA\Parameter(
-        *         name="service_type",
-        *         in="query",
-        *         required=true,
-        *         description="The network provider for the airtime (e.g., MTN, AIRTEL, GLO, 9MOBILE)",
-        *         @OA\Schema(
-        *             type="string",
-        *             enum={"MTN", "GLO"},
-        *             example="MTN"
-        *         )
-        *     ),
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=400, description="Invalid request")
+     *     description="Endpoint for purchasing airtime via BAP or Shago services. The 'type' parameter determines which provider to use.",
+     * 
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="path",
+     *         required=true,
+     *         description="The provider type: 'bap' or 'shago'",
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"bap", "shago"},
+     *             example="bap"
+     *         )
+     *     ),
+     * 
+     *     @OA\Parameter(
+     *         name="phone_number",
+     *         in="query",
+     *         required=true,
+     *         description="The phone number to recharge (format: 07012345678). For BAP only.",
+     *         @OA\Schema(
+     *             type="string",
+     *             example="07065788819"
+     *         )
+     *     ),
+     * 
+     *     @OA\Parameter(
+     *         name="amount",
+     *         in="query",
+     *         required=true,
+     *         description="The amount of airtime to purchase (in NGN)",
+     *         @OA\Schema(
+     *             type="number",
+     *             format="float",
+     *             example=100.00
+     *         )
+     *     ),
+     * 
+     *     @OA\Parameter(
+     *         name="service_type",
+     *         in="query",
+     *         required=false,
+     *         description="The network provider for BAP (e.g., MTN, GLO)",
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"MTN", "GLO"},
+     *             example="MTN"
+     *         )
+     *     ),
+     * 
+     *     @OA\Parameter(
+     *         name="phone",
+     *         in="query",
+     *         required=false,
+     *         description="The phone number to recharge (for Shago only)",
+     *         @OA\Schema(
+     *             type="string",
+     *             example="07065788819"
+     *         )
+     *     ),
+     * 
+     *     @OA\Parameter(
+     *         name="network",
+     *         in="query",
+     *         required=false,
+     *         description="The network provider for Shago (e.g., MTN, GLO)",
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"MTN", "GLO"},
+     *             example="MTN"
+     *         )
+     *     ),
+     * 
+     *     @OA\Parameter(
+     *         name="vend_type",
+     *         in="query",
+     *         required=false,
+     *         description="Vend type for Shago service",
+     *         @OA\Schema(
+     *             type="string",
+     *             example="VTU"
+     *         )
+     *     ),
+     * 
+     *     @OA\Parameter(
+     *         name="serviceCode",
+     *         in="query",
+     *         required=false,
+     *         description="Service code for Shago service",
+     *         @OA\Schema(
+     *             type="string",
+     *             example="QAB"
+     *         )
+     *     ),
+     * 
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation"
+     *     ),
+     * 
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request or missing required parameters"
+     *     )
      * )
      */
     public function recharge(Request $request, $type)

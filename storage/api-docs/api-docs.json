@@ -11,14 +11,28 @@
                 "tags": [
                     "Airtime"
                 ],
-                "summary": "buy airtime",
-                "description": "Endpoint for purchasing airtime, either from Bap or Shago Services",
+                "summary": "Buy airtime using BAP or Shago",
+                "description": "Endpoint for purchasing airtime via BAP or Shago services. The 'type' parameter determines which provider to use.",
                 "operationId": "3ad6c37440e2d9f2130228006d7112cd",
                 "parameters": [
                     {
+                        "name": "type",
+                        "in": "path",
+                        "description": "The provider type: 'bap' or 'shago'",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "bap",
+                                "shago"
+                            ],
+                            "example": "bap"
+                        }
+                    },
+                    {
                         "name": "phone_number",
                         "in": "query",
-                        "description": "The phone number to recharge (format: 07012345678)",
+                        "description": "The phone number to recharge (format: 07012345678). For BAP only.",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -39,8 +53,8 @@
                     {
                         "name": "service_type",
                         "in": "query",
-                        "description": "The network provider for the airtime (e.g., MTN, AIRTEL, GLO, 9MOBILE)",
-                        "required": true,
+                        "description": "The network provider for BAP (e.g., MTN, GLO)",
+                        "required": false,
                         "schema": {
                             "type": "string",
                             "enum": [
@@ -49,6 +63,50 @@
                             ],
                             "example": "MTN"
                         }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "The phone number to recharge (for Shago only)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "07065788819"
+                        }
+                    },
+                    {
+                        "name": "network",
+                        "in": "query",
+                        "description": "The network provider for Shago (e.g., MTN, GLO)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "MTN",
+                                "GLO"
+                            ],
+                            "example": "MTN"
+                        }
+                    },
+                    {
+                        "name": "vend_type",
+                        "in": "query",
+                        "description": "Vend type for Shago service",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "VTU"
+                        }
+                    },
+                    {
+                        "name": "serviceCode",
+                        "in": "query",
+                        "description": "Service code for Shago service",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "QAB"
+                        }
                     }
                 ],
                 "responses": {
@@ -56,7 +114,7 @@
                         "description": "Successful operation"
                     },
                     "400": {
-                        "description": "Invalid request"
+                        "description": "Invalid request or missing required parameters"
                     }
                 }
             }
