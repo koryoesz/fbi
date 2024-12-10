@@ -73,12 +73,14 @@ class AirtimeService implements IAirtimeRepository {
                     }
 
                     return [
+                        'status'   => true,
+                        'message' => 'Airtime purchase was succesful',
                         'wallet_balance' => $userWallet->balance
                     ];
                     
                 } else {
                     return [
-                        'status' => 'success',
+                        'status' => false,
                         'message' => 'Insufficient wallet balance'
                     ];
                 }

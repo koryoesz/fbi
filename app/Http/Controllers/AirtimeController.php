@@ -85,8 +85,8 @@ class AirtimeController extends Controller
             );
 
             $response = $this->airtimeRepository->vend($validated, 'bap');
-            $message = "Airtime purchase was succesful";
-            $success = true;
+            $message = $response['message'];
+            $success = $response['status'];
 
         } else if($type = "shago") {
             // switch for second provider
@@ -95,8 +95,8 @@ class AirtimeController extends Controller
             );
 
             $response = $this->airtimeRepository->vend($validated, 'shago');
-            $message = "Airtime purchase was succesful";
-            $success = true;
+            $message = $response['message'];
+            $success = $response['status'];
         }
 
         return response()->json(
