@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('last_transaction_id');
+            $table->unsignedInteger('last_transaction_id')->nullable();
             $table->decimal('balance')->default(1000);
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();

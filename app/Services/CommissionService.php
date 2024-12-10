@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
-use App\Models\Comission;
+use App\Models\ComissionLookup;
 
 class CommissionService {
 
-    protected $commissionModel;
-    public function __construct(Comission $comission) { 
-        $this->commissionModel = $comission;
+    protected $commissionLookupModel;
+    public function __construct(ComissionLookup $comissionLookup) { 
+        $this->commissionLookupModel = $comissionLookup;
     }
 
-    public function getCommission($amount) {
-        return $this->commissionModel->getCommission($amount);
+    public function getCommissionLookup($amount) {
+        return $this->commissionLookupModel->getCommission($amount);
     }
 
 }
