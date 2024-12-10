@@ -6,13 +6,53 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/users": {
+        "/vend/recharge": {
             "get": {
                 "tags": [
-                    "Users"
+                    "Airtime"
                 ],
-                "summary": "Get a list of users",
-                "operationId": "7e2f5799553ec93c9c43e2a58490d447",
+                "summary": "buy airtime",
+                "description": "Endpoint for purchasing airtime, either from Bap or Shago Services",
+                "operationId": "45edaa36c14db56f947dd000810c5917",
+                "parameters": [
+                    {
+                        "name": "phone_number",
+                        "in": "query",
+                        "description": "The phone number to recharge (format: 07012345678)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "07065788819"
+                        }
+                    },
+                    {
+                        "name": "amount",
+                        "in": "query",
+                        "description": "The amount of airtime to purchase (in NGN)",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 100
+                        }
+                    },
+                    {
+                        "name": "service_type",
+                        "in": "query",
+                        "description": "The network provider for the airtime (e.g., MTN, AIRTEL, GLO, 9MOBILE)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "MTN",
+                                "AIRTEL",
+                                "GLO",
+                                "9MOBILE"
+                            ],
+                            "example": "MTN"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation"
@@ -26,8 +66,8 @@
     },
     "tags": [
         {
-            "name": "Users",
-            "description": "Users"
+            "name": "Airtime",
+            "description": "Airtime"
         }
     ]
 }

@@ -23,7 +23,7 @@ class AirtimeService implements IAirtimeRepository {
     }
     public function vend($params)
     {
-        $user_id = 13; // for example
+        $user_id = 13; // for example authenticated user should be retrieved from either here or before
         $response = null;
         DB::beginTransaction();
         
