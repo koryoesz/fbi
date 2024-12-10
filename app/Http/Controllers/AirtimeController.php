@@ -75,7 +75,7 @@ class AirtimeController extends Controller
         $validated = [];
 
         if( $request->has("service_type") ){
-            
+            // switch for first provider
             $validated = $request->validate(
                 (new BapAirtimeRequest)->rules()
             );
@@ -83,7 +83,7 @@ class AirtimeController extends Controller
             $response = $this->airtimeRepository->vend($validated);
 
         } else if($request->has('airtime')) {
-            //
+            // switch for second provider
         }
 
         return response()->json(
