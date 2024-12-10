@@ -27,7 +27,7 @@ class AirtimeService implements IAirtimeRepository {
     }
     public function vend($params, $type = '')
     {
-        $user_id = 15; // for example authenticated user should be retrieved from either here or before
+        $user_id = 10; // for example authenticated user should be retrieved from either here or before
         $response = null;
         
         try {
