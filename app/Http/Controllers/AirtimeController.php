@@ -70,27 +70,32 @@ class AirtimeController extends Controller
      *     @OA\Response(response=400, description="Invalid request")
      * )
      */
-    public function recharge(Request $request)
+    public function recharge(Request $request, $type)
     {
         $validated = [];
+        $response = null;
+        $message = '';
+        $success = false;
 
-        if( $request->has("service_type") ){
+        if( $type == "bap" ){
             // switch for first provider
             $validated = $request->validate(
                 (new BapAirtimeRequest)->rules()
             );
 
             $response = $this->airtimeRepository->vend($validated);
+            $message = "Airtime purchase was succesful";
+            $success = true;
 
-        } else if($request->has('airtime')) {
+        } else if($type = "shago") {
             // switch for second provider
         }
 
         return response()->json(
             [   
-                'success' => true,
+                'success' => $success,
                 'data' => $response,
-                'message' => 'Airtime was successfully purchased'
+                'message' => $message
             ],200);
     }
 }

@@ -9,5 +9,5 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('vend')->group(function() {
-    Route::post('recharge', [AirtimeController::class, 'recharge']);
+    Route::post('recharge/{type}', [AirtimeController::class, 'recharge']);
 });
