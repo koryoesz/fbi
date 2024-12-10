@@ -8,6 +8,7 @@ use App\Repositories\IAirtimeRepository;
 use App\Services\TransactionService;
 use App\Services\WalletService;
 use App\Services\CommissionService;
+use App\Services\ShagoService;
 
 class AirtimeService implements IAirtimeRepository {
 
@@ -15,33 +16,43 @@ class AirtimeService implements IAirtimeRepository {
     protected TransactionService $transactionService;
     protected WalletService $walletService;
     protected CommissionService $commissionService;
-    public function __construct(BapService $bapServ, TransactionService $transactionServ, WalletService $walletServ, CommissionService $commissionServ) {
+    protected ShagoService $shagoService;
+    public function __construct(BapService $bapServ, TransactionService $transactionServ, WalletService $walletServ, 
+            CommissionService $commissionServ, ShagoService $shagoServ) {
         $this->bapService = $bapServ;
         $this->transactionService = $transactionServ;
         $this->walletService = $walletServ;
+        $this->shagoService = $shagoServ;
         $this->commissionService = $commissionServ;
     }
-    public function vend($params)
+    public function vend($params, $type = '')
     {
-        $user_id = 13; // for example authenticated user should be retrieved from either here or before
+        $user_id = 15; // for example authenticated user should be retrieved from either here or before
         $response = null;
         
         try {
-            return DB::transaction(function () use ($params, $user_id){
+            return DB::transaction(function () use ($params, $user_id, $type) {
                 $userWallet = $this->walletService->getUserWallet($user_id);
             
                 if($userWallet->balance > $params['amount']) {
                     $userWallet->balance = $userWallet->balance - $params['amount'];
                     $userWallet->save();
-            
-                    $response = $this->bapService->vendAirtime($params);
+
+                    if($type == "bap"){
+                        $response = $this->bapService->vendAirtime($params);
+                    } else if($type == "shago"){
+                        $response = $this->shagoService->vendAirtime($params);
+                    } else{ 
+                        throw new \Exception("Invalid vendor");
+                    }
 
                     $this->transactionService->createTransaction([
                         'user_id' => $user_id,
-                        'reference' => $response['data']['transactionReference'],
+                        'reference' => isset($response['data']) ? $response['data']['transactionReference'] : '',
                         'amount'    => $params['amount'],
-                        'network_provider'   => $params['service_type'],
-                        'transaction_type' => 'wallet_debit'
+                        'network_provider'   => $type,
+                        'transaction_type' => 'wallet_debit',
+                        'description' => $type.' airtime was purchased.'
                     ]);
                     
                     $comissionAmount = $this->commissionService->getCommissionLookup($params['amount']);
@@ -53,7 +64,8 @@ class AirtimeService implements IAirtimeRepository {
                             'user_id' => $user_id,
                             'reference' => 'system-reference'.time(),
                             'amount'    => $comissionAmount->bonus_amount,
-                            'transaction_type' => 'comission_top_up'
+                            'transaction_type' => 'comission_top_up',
+                            'description' => 'Comission on airtime purchased.'
                         ]);
 
                         $userWallet->last_transaction_id = $trans->id;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Repositories\IAirtimeRepository;
 use App\Http\Requests\BapAirtimeRequest;
+use App\Http\Requests\ShagoAirtimeRequest;
 
 /**
  * @OA\Info(
@@ -83,12 +84,19 @@ class AirtimeController extends Controller
                 (new BapAirtimeRequest)->rules()
             );
 
-            $response = $this->airtimeRepository->vend($validated);
+            $response = $this->airtimeRepository->vend($validated, 'bap');
             $message = "Airtime purchase was succesful";
             $success = true;
 
         } else if($type = "shago") {
             // switch for second provider
+            $validated = $request->validate(
+                (new ShagoAirtimeRequest)->rules()
+            );
+
+            $response = $this->airtimeRepository->vend($validated, 'shago');
+            $message = "Airtime purchase was succesful";
+            $success = true;
         }
 
         return response()->json(
