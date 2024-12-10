@@ -30,7 +30,7 @@ class AirtimeController extends Controller
 
      /**
      * @OA\Get(
-     *     path="/vend/recharge",
+     *     path="/vend/recharge/{type}",
      *     summary="buy airtime",
      *     tags={"Airtime"},
      *     description="Endpoint for purchasing airtime, either from Bap or Shago Services",
